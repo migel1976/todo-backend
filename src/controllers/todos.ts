@@ -3,6 +3,12 @@ import { Pool } from "pg";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
+// interface ITodo {
+//   id: number;
+//   title: string;
+//   status: boolean;
+// }
+
 const connectionString = `${process.env.DATABASE_URL}`;
 console.log("connectionString ", connectionString);
 
@@ -17,7 +23,7 @@ export const add = async (req, res) => {
   const todos = await prisma.todos.create({
     data: {
       title,
-      status,
+      status: JSON.parse(status),
     },
   });
   if (todos) {
@@ -57,11 +63,13 @@ export const edit = async (req, res) => {
     const data = req.body;
     console.log("data is ", data);
     const { id } = req.params;
+    const lclStatus = JSON.parse(data.status);
 
     await prisma.todos.update({
       where: { id: +id },
       // data: { name: data.name, position: data.position },
-      data: { title: data.title, status: data.status },
+      // data: { title: data.title, status: data.status },
+      data: { title: data.title, status: JSON.parse(data.status) },
     });
     res.status(204).json("OK");
   } catch {
