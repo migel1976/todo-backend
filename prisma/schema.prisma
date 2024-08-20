@@ -15,6 +15,7 @@ datasource db {
 }
 
 model todos {
-  id    Int     @id @default(autoincrement())
-  title String? @db.VarChar
+  id     Int     @id @default(autoincrement())
+  title  String? @db.VarChar
+  status Boolean @default(true)
 }

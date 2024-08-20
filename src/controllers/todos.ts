@@ -11,17 +11,18 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 export const add = async (req, res) => {
-  const { title } = req.body;
+  const { title, status } = req.body;
   if (!title) return res.status(400).json({ message: "введите имя" });
 
   const todos = await prisma.todos.create({
     data: {
       title,
+      status,
     },
   });
   if (todos) {
     res.status(200).json({
-      name: todos.name,
+      title: todos.title,
     });
   } else {
     return res.status(400).json({ message: "ошибка записи в БД" });
@@ -54,12 +55,13 @@ export const remove = async (req, res) => {
 export const edit = async (req, res) => {
   try {
     const data = req.body;
+    console.log("data is ", data);
     const { id } = req.params;
 
     await prisma.todos.update({
       where: { id: +id },
       // data: { name: data.name, position: data.position },
-      data: { title: data.title },
+      data: { title: data.title, status: data.status },
     });
     res.status(204).json("OK");
   } catch {
