@@ -37,7 +37,13 @@ export const add = async (req, res) => {
 
 export const getAllTodos = async (req, res) => {
   try {
-    const todos = await prisma.todos.findMany();
+    const todos = await prisma.todos.findMany({
+      orderBy: [
+        {
+          id: "desc",
+        },
+      ],
+    });
     return res.status(200).json(todos);
   } catch {
     return res.status(400).json({ message: "ошибка в получении todos" });
