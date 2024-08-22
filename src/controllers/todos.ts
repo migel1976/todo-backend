@@ -1,8 +1,8 @@
-import { Pool } from "pg";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from 'pg';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-import type { RequestHandler } from "express";
+import type { RequestHandler } from 'express';
 type ArgumentTypes<T> = T extends (...args: infer P) => any ? P : never;
 type RequestHandlerArgs = ArgumentTypes<RequestHandler>;
 
@@ -15,7 +15,7 @@ const prisma = new PrismaClient({ adapter });
 export const add = async (...args: RequestHandlerArgs) => {
   const [req, res] = args;
   const { title, status } = req.body;
-  if (!title) return res.status(400).json({ message: "введите имя" });
+  if (!title) return res.status(400).json({ message: 'введите имя' });
 
   const todos = await prisma.todos.create({
     data: {
@@ -28,7 +28,7 @@ export const add = async (...args: RequestHandlerArgs) => {
       title: todos.title,
     });
   } else {
-    return res.status(400).json({ message: "ошибка записи в БД" });
+    return res.status(400).json({ message: 'ошибка записи в БД' });
   }
 };
 
@@ -38,13 +38,13 @@ export const getAllTodos = async (...args: RequestHandlerArgs) => {
     const todos = await prisma.todos.findMany({
       orderBy: [
         {
-          id: "desc",
+          id: 'desc',
         },
       ],
     });
     return res.status(200).json(todos);
   } catch {
-    return res.status(400).json({ message: "ошибка в получении todos" });
+    return res.status(400).json({ message: 'ошибка в получении todos' });
   }
 };
 
@@ -57,9 +57,9 @@ export const remove = async (...args: RequestHandlerArgs) => {
         id: +id,
       },
     });
-    res.status(204).json({ message: "todo успешно удален" });
+    res.status(204).json({ message: 'todo успешно удален' });
   } catch {
-    res.status(500).json({ message: "не удалось удалить todo" });
+    res.status(500).json({ message: 'не удалось удалить todo' });
   }
 };
 
@@ -73,9 +73,9 @@ export const edit = async (...args: RequestHandlerArgs) => {
       where: { id: +id },
       data: { title: data.title, status: JSON.parse(data.status) },
     });
-    res.status(204).json("OK");
+    res.status(204).json('OK');
   } catch {
-    res.status(400).json({ message: "не удалось изменить todo" });
+    res.status(400).json({ message: 'не удалось изменить todo' });
   }
 };
 
@@ -90,6 +90,6 @@ export const getTodoById = async (...args: RequestHandlerArgs) => {
     });
     return res.status(200).json(todo);
   } catch {
-    return res.status(400).json({ message: "ошибка получения todo" });
+    return res.status(400).json({ message: 'ошибка получения todo' });
   }
 };
