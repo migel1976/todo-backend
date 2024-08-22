@@ -1,12 +1,5 @@
 var express = require("express");
 var router = express.Router();
-// const {
-//   add,
-//   // remove,
-//   // edit,
-//   // getAllUsers,
-//   // getUserByName,
-// } = require("../controllers/todos");
 import {
   add,
   getAllTodos,

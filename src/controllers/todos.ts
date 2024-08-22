@@ -1,22 +1,19 @@
-// const { Pool } = require("pg");
 import { Pool } from "pg";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-// interface ITodo {
-//   id: number;
-//   title: string;
-//   status: boolean;
-// }
+import type { RequestHandler } from "express";
+type ArgumentTypes<T> = T extends (...args: infer P) => any ? P : never;
+type RequestHandlerArgs = ArgumentTypes<RequestHandler>;
 
 const connectionString = `${process.env.DATABASE_URL}`;
-console.log("connectionString ", connectionString);
 
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-export const add = async (req, res) => {
+export const add = async (...args: RequestHandlerArgs) => {
+  const [req, res] = args;
   const { title, status } = req.body;
   if (!title) return res.status(400).json({ message: "введите имя" });
 
@@ -35,7 +32,8 @@ export const add = async (req, res) => {
   }
 };
 
-export const getAllTodos = async (req, res) => {
+export const getAllTodos = async (...args: RequestHandlerArgs) => {
+  const [req, res] = args;
   try {
     const todos = await prisma.todos.findMany({
       orderBy: [
@@ -50,7 +48,8 @@ export const getAllTodos = async (req, res) => {
   }
 };
 
-export const remove = async (req, res) => {
+export const remove = async (...args: RequestHandlerArgs) => {
+  const [req, res] = args;
   try {
     const { id } = req.params;
     await prisma.todos.delete({
@@ -64,17 +63,14 @@ export const remove = async (req, res) => {
   }
 };
 
-export const edit = async (req, res) => {
+export const edit = async (...args: RequestHandlerArgs) => {
+  const [req, res] = args;
   try {
     const data = req.body;
-    console.log("data is ", data);
     const { id } = req.params;
-    const lclStatus = JSON.parse(data.status);
 
     await prisma.todos.update({
       where: { id: +id },
-      // data: { name: data.name, position: data.position },
-      // data: { title: data.title, status: data.status },
       data: { title: data.title, status: JSON.parse(data.status) },
     });
     res.status(204).json("OK");
@@ -83,7 +79,8 @@ export const edit = async (req, res) => {
   }
 };
 
-export const getTodoById = async (req, res) => {
+export const getTodoById = async (...args: RequestHandlerArgs) => {
+  const [req, res] = args;
   try {
     const { id } = req.params;
     const todo = await prisma.todos.findUnique({
