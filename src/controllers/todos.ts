@@ -15,20 +15,25 @@ const prisma = new PrismaClient({ adapter });
 export const add = async (...args: RequestHandlerArgs) => {
   const [req, res] = args;
   const { title, status } = req.body;
-  if (!title) return res.status(400).json({ message: 'введите имя' });
+  try {
+    if (!title) return res.status(400).json({ message: 'введите имя' });
+    if (status === undefined) return res.status(400).json({ message: 'укажите статус' });
 
-  const todos = await prisma.todos.create({
-    data: {
-      title,
-      status: JSON.parse(status),
-    },
-  });
-  if (todos) {
-    res.status(200).json({
-      title: todos.title,
+    const todos = await prisma.todos.create({
+      data: {
+        title,
+        status: JSON.parse(status),
+      },
     });
-  } else {
-    return res.status(400).json({ message: 'ошибка записи в БД' });
+    if (todos) {
+      res.status(200).json({
+        title: todos.title,
+      });
+    } else {
+      return res.status(400).json({ message: 'ошибка записи в БД' });
+    }
+  } catch {
+    return res.status(400).json({ message: 'ошибка при добавлении todos' });
   }
 };
 
@@ -68,6 +73,8 @@ export const edit = async (...args: RequestHandlerArgs) => {
   try {
     const data = req.body;
     const { id } = req.params;
+    if (!data.title) return res.status(400).json({ message: 'введите имя' });
+    if (data.status === undefined) return res.status(400).json({ message: 'укажите статус' });
 
     await prisma.todos.update({
       where: { id: +id },
